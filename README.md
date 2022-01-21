@@ -27,12 +27,52 @@ enthusiasm to continue, especially as I became interested in other projects. Sin
 created this repo so as not to lose the work.
 </p>
 
+<h2>Deserialization</h2>
+<p>
+Deserialization, in the context of the feature alchemist is the process in which a .feature file I converted 
+into a POJO. Luckily Gherkin have released a tool which performs this process.
+</p>
+
+![Example of feature Deserialization using the alchemist](readmeImages/FeatureDeserializationExample.png)
+<p>
+As you can see from the above the .feature file diagram has been deserialized into a java representation as you’d 
+expect, with a overarching Feature object representing the feature, a Scenario object representing the features 
+various scenarios and so forth.
+</p>
+<p>
+Its worth mentioning that while this deserialization tool provided by Gherkin is extremely useful it does have its 
+limitations. While .feature files can be very loose with syntax the deserialize does mandate a specific order to the 
+elements in the feature in order to correctly map the .feature file into a POJO. This results in completely valid 
+Cucumber syntax like the below causing the deserialize method to throw an exception.
+</p>
+
+```
+Feature: Be a valid feature
+@UUID-e28c835c-374c-4a96-b2c1-e06c1f30fb2e
+Scenario Outline: Some scenario
+Given a precondition
+When some event
+Then i validate the result
+And i validate another result
+And i validate another result
+Examples:
+| row |
+| column |
+@SomeTag
+Example:
+| row |
+```
+```
+Error mapping .feature file json into Feature object
+```
+
 <h2>Serialization</h2>
 <p>
 Serialization is the process in the context of the feature alchemist is the process in which a plain old java object 
 (POJO) is converted into a .feature file.
 </p>
-![Example of feature serialization using the alchemist](readmeImages/Feature Serialization Example.png)
+
+![Example of feature serialization using the alchemist](readmeImages/FeatureSerializationExample.png)
 <p>
 The serialization process would be necessary in case we wanted to save any modifications to .feature files through 
 proposed tools like the tag-cleaner. Unfortunately, unlike deserialization Gherkin does not provide a tool 
