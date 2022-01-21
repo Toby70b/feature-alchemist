@@ -27,13 +27,81 @@ enthusiasm to continue, especially as I became interested in other projects. Sin
 created this repo so as not to lose the work.
 </p>
 
+<h2>Serialization</h2>
+<p>
+Serialization is the process in the context of the feature alchemist is the process in which a plain old java object 
+(POJO) is converted into a .feature file.
+</p>
+![Example of feature serialization using the alchemist](readmeImages/Feature Serialization Example.png)
+<p>
+The serialization process would be necessary in case we wanted to save any modifications to .feature files through 
+proposed tools like the tag-cleaner. Unfortunately, unlike deserialization Gherkin does not provide a tool 
+for the serialization process. 
+</p>
+<p>
+The serialization process takes a Java object representing a .feature file (this will almost always be created 
+from the de-serialization process) and uses it to write to a new .feature file. Each Cucumber element has 
+its own logic for how it should be written to a file.
+</p>
+
+<h2>Validation</h2>
+<p>
+Before a feature can be serialized it must first be validated to confirm the resulting. feature file can be successfully 
+used for testing. Like serialization each Cucumber element contains a Validator used to validate the object 
+for invalid syntax.
+</p>
+Validator rules can be split into warnings and errors. Validation warnings are considered bad practice but do not 
+prevent a Cucumber file from running. Warnings include a feature without a description or any scenarios. However, 
+a validation error means that the resulting .feature file would contain invalid syntax. Examples of validation errors 
+include missing keywords or background scenarios with example tables.
+<p>
+A Feature object containing only validation warnings will be allowed to compile. However, a feature object containing 
+validation errors will be prevented from compiling, and an exception will be thrown indicating
+the validation errors encountered.
+</p>
+
+```
+{
+  "valid": false,
+  "validationErrors": [
+    {
+      "severity": "ERROR",
+      "validationError": "Feature has no keyword",
+      "elementIdentifier": null
+    },
+    {
+      "severity": "ERROR",
+      "validationError": "Step has no keyword",
+      "elementIdentifier": "I search for books by author Erik Larson"
+    },
+    {
+      "severity": "ERROR",
+      "validationError": "Step has no keyword",
+      "elementIdentifier": "I find 2 books"
+    }
+  ]
+}
+```
 
 <h2>How to use</h2>
+<p>To decompile .feature files into a Feature object:</p>
+
+```
+  FeatureDecompiler featureDecompiler = new FeatureDecompiler();
+  Feature feature = featureDecompiler.convertFeatureFileIntoObject(file);
+```
+<p>To re-compile Feature objects back into Feature files:</p>
+
+```
+ FeatureCompiler featureCompiler = new FeatureCompiler();
+ featureCompiler.convertObjectIntoFeatureFile(feature, new File("newFeature.feature"));
+```
 
 <h2>Improvements</h2>
-As mentioned above this project was a proof-of-concept and some logic like the feature object validation necessitating 
-the use of tags in scenarios reflects some business rules from the original design document. As such there are 
-some things that could be improved. I don't anticipate returning to this project soon, but here are some things in case future me is interested.
+As mentioned above this project was a proof-of-concept and some logic like the feature object validation necessitating
+the use of tags in scenarios reflects some business rules from the original design document. As such there are some
+things that could be improved. I don't anticipate returning to this project soon, but here are some things in case
+future me is interested.
 <ul>
     <li>More unit tests around feature serialization</li>
     <li>Refactoring the "Builder" classes to not use on static methods
